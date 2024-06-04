@@ -4,9 +4,10 @@ from config import *
 from utils import get_random_color
 
 class Game:
-    def __init__(self, screen, speed):
+    def __init__(self, screen, speed, username):  # Accept username as a parameter
         self.screen = screen
         self.speed = speed
+        self.username = username  # Store the username
         self.ball_velocity = self.set_ball_velocity(speed)
         self.ball_pos = self.set_initial_ball_position()
         self.ball_radius = BALL_RADIUS
@@ -92,13 +93,22 @@ class Game:
         pygame.draw.circle(self.screen, self.element_color, CIRCLE_CENTER, CIRCLE_RADIUS, 1)
         pygame.draw.circle(self.screen, self.element_color, self.ball_pos, self.ball_radius)
         
+        # Draw line following the center of the ball
+        pygame.draw.line(self.screen, self.element_color, CIRCLE_CENTER, (self.ball_pos[0] + self.ball_radius, self.ball_pos[1] + self.ball_radius), 1)
+
         for point in self.lines:
             pygame.draw.line(self.screen, self.element_color, CIRCLE_CENTER, point, 1)
 
         counter_text = FONT.render(f"Counter: {self.counter}", True, WHITE)
         self.screen.blit(counter_text, (10, 10))
 
+        # Display the username
+        username_text = FONT.render(f"Logged in as: {self.username}", True, WHITE)
+        self.screen.blit(username_text, (WIDTH - username_text.get_width() - 10, 10))  # Align to the top right corner
+
     def show_game_over(self):
         self.screen.fill(BLACK)
         game_over_text = FONT.render("Game Over! Press 'R' to Restart", True, WHITE)
         self.screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+
+
