@@ -4,6 +4,7 @@ from config import WIDTH, HEIGHT, FONT
 from menu import show_menu
 from game import Game
 from authentication import MySQLAuthentication
+import hashlib
 
 pygame.init()
 
@@ -22,6 +23,8 @@ def display_login_screen(screen, font, auth):
     login_button_rect = pygame.Rect(300, 300, 100, 50)
     login_button_color = pygame.Color('dodgerblue')
     login_button_text_color = pygame.Color('white')
+    register_button_rect = pygame.Rect(300, 370, 100, 50)  # Define a rectangle for the register button
+    register_button_color = pygame.Color('green')
 
     while True:
         screen.fill((255, 255, 255))
@@ -31,6 +34,10 @@ def display_login_screen(screen, font, auth):
         login_button = pygame.draw.rect(screen, login_button_color, login_button_rect)
         font_surface = font.render('Login', True, login_button_text_color)
         screen.blit(font_surface, (login_button.x + 10, login_button.y + 10))
+
+        register_button = pygame.draw.rect(screen, register_button_color, register_button_rect)  # Render the register button
+        register_text_surface = font.render('Register', True, pygame.Color('white'))
+        screen.blit(register_text_surface, (register_button.x + 10, register_button.y + 10))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -44,10 +51,18 @@ def display_login_screen(screen, font, auth):
                     username_active = False
                     password_active = True
                 elif login_button.collidepoint(event.pos):
-                    # Attempt to log in
-                    logged_in = auth.login(username, password)
+                    # Hash the password before attempting to log in
+                    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+                    # Attempt to log in with the hashed password
+                    logged_in = auth.login(username, hashed_password)
                     if logged_in:
                         return True
+                elif register_button.collidepoint(event.pos):  # Check if register button is clicked
+                    # Hash the password before registering
+                    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+                    # Attempt to register the user
+                    auth.register(username, hashed_password)
+                    print("Please log in with your new account.")
                 else:
                     username_active = False
                     password_active = False
@@ -63,8 +78,10 @@ def display_login_screen(screen, font, auth):
                 elif password_active:
                     if event.key == pygame.K_RETURN:
                         password_active = False
-                        # Attempt to log in
-                        logged_in = auth.login(username, password)
+                        # Hash the password before attempting to log in
+                        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+                        # Attempt to log in with the hashed password
+                        logged_in = auth.login(username, hashed_password)
                         if logged_in:
                             return True
                     elif event.key == pygame.K_BACKSPACE:
@@ -82,13 +99,13 @@ def display_login_screen(screen, font, auth):
 # Create an instance of MySQLAuthentication
 auth = MySQLAuthentication("localhost", "root", "", "pypy")
 
-# Display login screen and attempt to log in
+# Display login screen and attempt to log in or register
 if display_login_screen(screen, FONT, auth):
     # Show the menu and get user choice
     speed = show_menu(screen, FONT)
 
     # Get the username from the authentication object
-    username = auth.username
+    username= auth.username
 
     # Start the game with the username parameter
     game = Game(screen, speed, username)
