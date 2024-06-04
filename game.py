@@ -10,7 +10,7 @@ class Game:
         self.ball_velocity = self.set_ball_velocity(speed)
         self.ball_pos = self.set_initial_ball_position()
         self.ball_radius = BALL_RADIUS
-        self.ball_color = BALL_COLOR
+        self.element_color = BALL_COLOR
         self.counter = 0
         self.lines = []
         self.game_over = False
@@ -52,7 +52,7 @@ class Game:
     def reset_game(self):
         self.ball_radius = BALL_RADIUS
         self.ball_pos = self.set_initial_ball_position()
-        self.ball_color = BALL_COLOR
+        self.element_color = BALL_COLOR
         self.counter = 0
         self.game_over = False
         self.lines = []
@@ -64,7 +64,7 @@ class Game:
         distance_from_center = ((self.ball_pos[0] - CIRCLE_CENTER[0]) ** 2 + (self.ball_pos[1] - CIRCLE_CENTER[1]) ** 2) ** 0.5
         if distance_from_center >= CIRCLE_RADIUS - self.ball_radius:
             self.bounce_sound.play()
-            self.ball_color = get_random_color()
+            self.element_color = get_random_color()
             self.reflect_ball_velocity(distance_from_center)
             self.add_contact_point(distance_from_center)
             if self.ball_radius < MAX_BALL_RADIUS:
@@ -89,11 +89,11 @@ class Game:
 
     def draw_game(self):
         self.screen.fill(BLACK)
-        pygame.draw.circle(self.screen, WHITE, CIRCLE_CENTER, CIRCLE_RADIUS, 1)
-        pygame.draw.circle(self.screen, self.ball_color, self.ball_pos, self.ball_radius)
+        pygame.draw.circle(self.screen, self.element_color, CIRCLE_CENTER, CIRCLE_RADIUS, 1)
+        pygame.draw.circle(self.screen, self.element_color, self.ball_pos, self.ball_radius)
         
         for point in self.lines:
-            pygame.draw.line(self.screen, WHITE, CIRCLE_CENTER, point, 1)
+            pygame.draw.line(self.screen, self.element_color, CIRCLE_CENTER, point, 1)
 
         counter_text = FONT.render(f"Counter: {self.counter}", True, WHITE)
         self.screen.blit(counter_text, (10, 10))

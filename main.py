@@ -4,7 +4,6 @@ from config import *
 from menu import show_menu
 from game import Game
 
-# Initialize Pygame
 pygame.init()
 
 # Set up the screen
